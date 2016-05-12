@@ -8,14 +8,16 @@
 
 import UIKit
 
-class MasterViewController: UITableViewController {
+class MasterViewController: UITableViewController, DataEnteredDelegate {
 
     var detailViewController: DetailViewController? = nil
-    var objects = [AnyObject]()
+    var objects = [Contact]()
+    let directory = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString //set directory
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setUpContacts()
         // Do any additional setup after loading the view, typically from a nib.
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
 
@@ -25,6 +27,67 @@ class MasterViewController: UITableViewController {
             let controllers = split.viewControllers
             self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
         }
+    }
+    
+    func setUpContacts() {
+        let file = directory.stringByAppendingPathComponent("contacts.plist") //set file location
+        if let fileContent = NSArray(contentsOfFile: file) as! Array<NSDictionary>?{ //if file has contents
+            let count = fileContent.count //count how many elements are in file
+            for(var i = 0; i < count; i++){ //loop through each element in file
+                /* take data from each element in file */
+                let firstName = fileContent[i].valueForKey("firstName") as! String
+                let lastName = fileContent[i].valueForKey("lastName") as! String
+                let address = fileContent[i].valueForKey("address") as! String
+                let imageURL = fileContent[i].valueForKey("imageURL") as! String
+                let contact = Contact(firstName: firstName, lastName: lastName, address: address, imageURL: imageURL)
+                loadPhotoInBackground(contact)
+                objects += [contact] //append photo to array of photos
+            }
+        }else{
+            print("nothing in contacts.plist") //nothing in file
+        }
+        /*
+        for contact in objects{ // loop through photo array and download each NSData in the background
+            loadPhotoInBackground(contact)
+        }
+        */
+    }
+    func userDidEnterInformation(vc: DetailViewController) {
+        if(vc.imageURLTextField.text != ""){
+            let newContact = Contact(firstName: vc.firstNameTextField.text!, lastName: vc.lastNameTextField.text!, address: vc.addressTextField.text!, imageURL: vc.imageURLTextField.text!)
+        
+            if(vc.detailItem == nil){
+                objects.append(newContact)
+                loadPhotoInBackground(newContact)
+            }else{
+                objects[vc.indexPath!] = newContact
+                loadPhotoInBackground(newContact)
+            }
+            let arrayPLIST = NSMutableArray() //initialize mutable array
+            for contact in objects{  //loop through array of photos
+                arrayPLIST.addObject(contact.propertyListRepresentation()) //add photo to the mutable array
+            }
+            let file = directory.stringByAppendingPathComponent("contacts.plist") //set destination file
+            arrayPLIST.writeToFile(file, atomically: true) //write property list to fill
+        }else{
+            print("here")
+        }
+    }
+    func loadPhotoInBackground(contact : Contact){
+        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)
+        
+        let backgroundDownload = { // put the multi thread logic in a variable
+            if let data = NSData(contentsOfURL: NSURL(string: contact.imageURL)!) {
+                let mainQueue = dispatch_get_main_queue()
+                dispatch_async(mainQueue, {
+                    contact.imageData = data
+                    self.tableView!.reloadData()
+                })
+            } else {
+                print("Could not download Image '\(contact.imageURL)'")
+            }
+        }
+        dispatch_async(queue, backgroundDownload) //run the multithread
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -36,23 +99,32 @@ class MasterViewController: UITableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    
     func insertNewObject(sender: AnyObject) {
-        objects.insert(NSDate(), atIndex: 0)
-        let indexPath = NSIndexPath(forRow: 0, inSection: 0)
-        self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+        performSegueWithIdentifier("showDetail", sender: nil)
     }
+    
 
     // MARK: - Segues
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
+            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
+            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
+            controller.navigationItem.leftItemsSupplementBackButton = true
+            controller.delegate = self
             if let indexPath = self.tableView.indexPathForSelectedRow {
-                let object = objects[indexPath.row] as! NSDate
-                let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
+                let object = objects[indexPath.row]
                 controller.detailItem = object
-                controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
-                controller.navigationItem.leftItemsSupplementBackButton = true
+                controller.indexPath = indexPath.row
+                if(object.imageData != nil){
+                    controller.currentImageData = object.imageData!
+                }else{ /* If user clicks the item before the picture is downloaded then let detail know by setting it to nil */
+                    controller.currentImageData = nil
+                }
+            }else{
+                controller.detailItem = nil
             }
         }
     }
@@ -70,9 +142,13 @@ class MasterViewController: UITableViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath)
 
-        let object = objects[indexPath.row] as! NSDate
-        cell.textLabel!.text = object.description
+        let object = objects[indexPath.row]
+        cell.textLabel!.text = object.fullName()
+            if let picture = objects[indexPath.row].imageData {
+                cell.imageView!.image = UIImage(data: picture) //set cell's UIImage to the photo's NSData
+            }
         return cell
+
     }
 
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -84,6 +160,16 @@ class MasterViewController: UITableViewController {
         if editingStyle == .Delete {
             objects.removeAtIndex(indexPath.row)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            let arrayPLIST = NSMutableArray() //initialize mutable array
+            if(objects.count > 0){
+                for contact in objects{  //loop through array of photos
+                    arrayPLIST.addObject(contact.propertyListRepresentation()) //add photo to the mutable array
+                }
+            }
+            let file = directory.stringByAppendingPathComponent("contacts.plist") //set destination file
+            arrayPLIST.writeToFile(file, atomically: true) //write property list to file
+            
+            
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         }

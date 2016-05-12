@@ -8,25 +8,69 @@
 
 import UIKit
 
-class DetailViewController: UIViewController {
+protocol DataEnteredDelegate{
+    func userDidEnterInformation(vc: DetailViewController) //user entered information, send this info back to the master view for proccessing.
+}
+
+class DetailViewController: UIViewController, UITextFieldDelegate{
 
     @IBOutlet weak var detailDescriptionLabel: UILabel!
-
-
-    var detailItem: AnyObject? {
+    
+    @IBOutlet weak var firstNameTextField: UITextField!
+    
+    @IBOutlet weak var lastNameTextField: UITextField!
+    
+    @IBOutlet weak var addressTextField: UITextField!
+    
+    @IBOutlet weak var imageURLTextField: UITextField!
+    
+    @IBOutlet weak var displayPic: UIImageView!
+    
+    var currentImageData: NSData?
+    
+    var detailItem: Contact? {
         didSet {
             // Update the view.
             self.configureView()
         }
     }
-
+    var delegate : DataEnteredDelegate? = nil
+    var indexPath : Int?
+    
     func configureView() {
         // Update the user interface for the detail item.
         if let detail = self.detailItem {
-            if let label = self.detailDescriptionLabel {
-                label.text = detail.description
+            if let label = detailDescriptionLabel{
+                firstNameTextField.text = detail.firstName
+                lastNameTextField.text = detail.lastName
+                addressTextField.text = detail.address
+                imageURLTextField.text = detail.imageURL
+                if currentImageData != nil{
+                    displayPic.image = UIImage(data: currentImageData!) //set UIImage
+                }else{ /* If user clicks the item before it is downloaded then we need to re-download the item */
+                    loadPhotoInBackground(detail.imageURL)
+                }
+            }
+            
+        }
+    }
+    /* Load Photo in background */
+    func loadPhotoInBackground(url: String){
+        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)
+        
+        let backgroundDownload = { // put the multi thread logic in a variable
+            if let data = NSData(contentsOfURL: NSURL(string: url )!) {
+                let mainQueue = dispatch_get_main_queue()
+                dispatch_async(mainQueue, {
+                    self.currentImageData = data
+                    self.detailItem?.imageData = data
+                    self.displayPic.image = UIImage(data: data)
+                })
+            } else {
+                print("Could not download Image '\(url)'")
             }
         }
+        dispatch_async(queue, backgroundDownload) //run the multithread
     }
 
     override func viewDidLoad() {
@@ -38,6 +82,10 @@ class DetailViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        delegate?.userDidEnterInformation(self)
     }
 
 
