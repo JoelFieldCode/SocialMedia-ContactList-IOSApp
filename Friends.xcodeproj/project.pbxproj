@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D6BBFE51CE54F01004FC504 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D6BBFE41CE54F01004FC504 /* MapKit.framework */; };
+		5D6BBFE71CE54F53004FC504 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6BBFE61CE54F53004FC504 /* MapViewController.swift */; };
 		5DA8C8AC1CE3F8840070C666 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA8C8AB1CE3F8840070C666 /* AppDelegate.swift */; };
 		5DA8C8AE1CE3F8840070C666 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA8C8AD1CE3F8840070C666 /* MasterViewController.swift */; };
 		5DA8C8B01CE3F8840070C666 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA8C8AF1CE3F8840070C666 /* DetailViewController.swift */; };
@@ -38,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5D6BBFE41CE54F01004FC504 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		5D6BBFE61CE54F53004FC504 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		5DA8C8A81CE3F8840070C666 /* Friends.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Friends.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DA8C8AB1CE3F8840070C666 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5DA8C8AD1CE3F8840070C666 /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
@@ -62,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D6BBFE51CE54F01004FC504 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +90,7 @@
 		5DA8C89F1CE3F8840070C666 = {
 			isa = PBXGroup;
 			children = (
+				5D6BBFE41CE54F01004FC504 /* MapKit.framework */,
 				5DA8C8AA1CE3F8840070C666 /* Friends */,
 				5DA8C8C11CE3F8840070C666 /* FriendsTests */,
 				5DA8C8CC1CE3F8840070C666 /* FriendsUITests */,
@@ -108,6 +114,7 @@
 				5DA8C8AB1CE3F8840070C666 /* AppDelegate.swift */,
 				5DA8C8AD1CE3F8840070C666 /* MasterViewController.swift */,
 				5DA8C8AF1CE3F8840070C666 /* DetailViewController.swift */,
+				5D6BBFE61CE54F53004FC504 /* MapViewController.swift */,
 				5DA8C8B11CE3F8840070C666 /* Main.storyboard */,
 				5DA8C8B41CE3F8840070C666 /* Assets.xcassets */,
 				5DA8C8B61CE3F8840070C666 /* LaunchScreen.storyboard */,
@@ -206,6 +213,11 @@
 					5DA8C8A71CE3F8840070C666 = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = 5XV64GA9X6;
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					5DA8C8BD1CE3F8840070C666 = {
 						CreatedOnToolsVersion = 7.2.1;
@@ -277,6 +289,7 @@
 				5DA8C8E01CE40EF50070C666 /* TimelineEntry.swift in Sources */,
 				5DA8C8AC1CE3F8840070C666 /* AppDelegate.swift in Sources */,
 				5DA8C8DE1CE4018E0070C666 /* SocialMediaAccount.swift in Sources */,
+				5D6BBFE71CE54F53004FC504 /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -503,6 +516,7 @@
 				5DA8C8D41CE3F8840070C666 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5DA8C8D51CE3F8840070C666 /* Build configuration list for PBXNativeTarget "FriendsTests" */ = {
 			isa = XCConfigurationList;
@@ -511,6 +525,7 @@
 				5DA8C8D71CE3F8840070C666 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5DA8C8D81CE3F8840070C666 /* Build configuration list for PBXNativeTarget "FriendsUITests" */ = {
 			isa = XCConfigurationList;
@@ -519,6 +534,7 @@
 				5DA8C8DA1CE3F8840070C666 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

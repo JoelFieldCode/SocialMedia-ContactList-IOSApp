@@ -11,6 +11,7 @@ import UIKit
 class MasterViewController: UITableViewController, DataEnteredDelegate {
 
     var detailViewController: DetailViewController? = nil
+    
     var objects = [Contact]()
     let directory = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString //set directory
 
@@ -54,8 +55,9 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
     }
     func userDidEnterInformation(vc: DetailViewController) {
         if(vc.imageURLTextField.text != ""){
+            
+            let newSocial = SocialMediaAccount(type: "Flickr", id: vc.flickrTextField.text!)
             let newContact = Contact(firstName: vc.firstNameTextField.text!, lastName: vc.lastNameTextField.text!, address: vc.addressTextField.text!, imageURL: vc.imageURLTextField.text!)
-        
             if(vc.detailItem == nil){
                 objects.append(newContact)
                 loadPhotoInBackground(newContact)
@@ -70,7 +72,7 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
             let file = directory.stringByAppendingPathComponent("contacts.plist") //set destination file
             arrayPLIST.writeToFile(file, atomically: true) //write property list to fill
         }else{
-            print("here")
+            print("url text field empty")
         }
     }
     func loadPhotoInBackground(contact : Contact){

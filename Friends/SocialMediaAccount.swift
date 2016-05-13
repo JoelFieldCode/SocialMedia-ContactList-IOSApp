@@ -8,14 +8,13 @@
 
 import Foundation
 
-class SocialMediaAccount : Contact{
+class SocialMediaAccount{
     
     var type = ""
     var id = ""
     var entries : [TimelineEntry]?
     
-    init(firstName: String, lastName: String, address: String, middleName: String? = nil,imageURL: String,imageData: NSData? = nil, type : String, id: String){
-        super.init()
+    init(type: String, id: String){
         self.id = id
         self.type = type
     }

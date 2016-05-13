@@ -24,6 +24,13 @@ class DetailViewController: UIViewController, UITextFieldDelegate{
     
     @IBOutlet weak var imageURLTextField: UITextField!
     
+    @IBOutlet weak var flickrTextField: UITextField!
+    
+    @IBOutlet weak var facebookTextField: UITextField!
+    
+    @IBOutlet weak var webPageTextField: UITextField!
+    
+    
     @IBOutlet weak var displayPic: UIImageView!
     
     var currentImageData: NSData?
@@ -45,6 +52,7 @@ class DetailViewController: UIViewController, UITextFieldDelegate{
                 lastNameTextField.text = detail.lastName
                 addressTextField.text = detail.address
                 imageURLTextField.text = detail.imageURL
+                
                 if currentImageData != nil{
                     displayPic.image = UIImage(data: currentImageData!) //set UIImage
                 }else{ /* If user clicks the item before it is downloaded then we need to re-download the item */
@@ -87,7 +95,17 @@ class DetailViewController: UIViewController, UITextFieldDelegate{
     override func viewWillDisappear(animated: Bool) {
         delegate?.userDidEnterInformation(self)
     }
-
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "showMap" {
+            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! MapViewController
+            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
+            controller.navigationItem.leftItemsSupplementBackButton = true
+            controller.address = self.detailItem!.address
+        }
+        
+    }
+    
 
 }
 

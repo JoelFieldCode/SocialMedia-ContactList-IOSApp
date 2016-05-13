@@ -24,13 +24,14 @@ class Contact {
     }
     
     /* Contact Init */
-    convenience init (firstName: String, lastName: String, address: String, middleName: String? = nil, imageURL: String, imageData: NSData? = nil){
+    convenience init(firstName: String, lastName: String, address: String,imageURL: String, imageData: NSData? = nil, sites: [SocialMediaAccount]? = nil){
         self.init()
         self.firstName = firstName
         self.lastName = lastName
         self.address = address
         self.imageData = imageData
         self.imageURL = imageURL
+        self.sites = sites
     }
     /* Property list init */
     convenience init (propertyList : NSDictionary) {
