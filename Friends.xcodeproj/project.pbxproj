@@ -20,6 +20,7 @@
 		5DA8C8DC1CE3FB4D0070C666 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA8C8DB1CE3FB4D0070C666 /* Contact.swift */; };
 		5DA8C8DE1CE4018E0070C666 /* SocialMediaAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA8C8DD1CE4018E0070C666 /* SocialMediaAccount.swift */; };
 		5DA8C8E01CE40EF50070C666 /* TimelineEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA8C8DF1CE40EF50070C666 /* TimelineEntry.swift */; };
+		5DF8887F1CEC134E00393445 /* PropertyListConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF8887E1CEC134E00393445 /* PropertyListConvertible.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		5DA8C8DB1CE3FB4D0070C666 /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		5DA8C8DD1CE4018E0070C666 /* SocialMediaAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocialMediaAccount.swift; sourceTree = "<group>"; };
 		5DA8C8DF1CE40EF50070C666 /* TimelineEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineEntry.swift; sourceTree = "<group>"; };
+		5DF8887E1CEC134E00393445 /* PropertyListConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyListConvertible.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +124,7 @@
 				5DA8C8DB1CE3FB4D0070C666 /* Contact.swift */,
 				5DA8C8DD1CE4018E0070C666 /* SocialMediaAccount.swift */,
 				5DA8C8DF1CE40EF50070C666 /* TimelineEntry.swift */,
+				5DF8887E1CEC134E00393445 /* PropertyListConvertible.swift */,
 			);
 			path = Friends;
 			sourceTree = "<group>";
@@ -289,6 +292,7 @@
 				5DA8C8E01CE40EF50070C666 /* TimelineEntry.swift in Sources */,
 				5DA8C8AC1CE3F8840070C666 /* AppDelegate.swift in Sources */,
 				5DA8C8DE1CE4018E0070C666 /* SocialMediaAccount.swift in Sources */,
+				5DF8887F1CEC134E00393445 /* PropertyListConvertible.swift in Sources */,
 				5D6BBFE71CE54F53004FC504 /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

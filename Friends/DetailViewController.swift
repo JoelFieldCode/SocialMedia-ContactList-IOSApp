@@ -52,7 +52,13 @@ class DetailViewController: UIViewController, UITextFieldDelegate{
                 lastNameTextField.text = detail.lastName
                 addressTextField.text = detail.address
                 imageURLTextField.text = detail.imageURL
-                
+                if(false == detail.sites.isEmpty){
+                    for(var i = 0; i < detail.sites.count; i++){
+                        if(detail.sites[i].type == "Flickr"){
+                            flickrTextField.text = detail.sites[i].id
+                        }
+                    }
+                }
                 if currentImageData != nil{
                     displayPic.image = UIImage(data: currentImageData!) //set UIImage
                 }else{ /* If user clicks the item before it is downloaded then we need to re-download the item */

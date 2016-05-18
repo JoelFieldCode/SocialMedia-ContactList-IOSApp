@@ -8,24 +8,40 @@
 
 import Foundation
 
-class Contact {
+class Contact: PropertyListConvertible {
     
     var firstName = ""
     var lastName = ""
     var address = ""
     var imageURL = ""
     var imageData: NSData?
-    var sites : [SocialMediaAccount]?
+    var sites : [SocialMediaAccount]
     
     
     /* Present properties as NSDictionary */
     func propertyListRepresentation() -> NSDictionary{
-        return [ "firstName": firstName, "lastName" : lastName, "address": address,"imageURL" : imageURL]
+        return [
+            "firstName": firstName,
+            "lastName": lastName,
+            "address": address,
+            "imageURL": imageURL,
+            "sites" : sites.map { $0.propertyListRepresentation() }
+        ]
+    }
+    
+    init(firstName: String, lastName: String, address: String, imageURL: String, imageData: NSData? = nil, sites: [SocialMediaAccount] = []){
+        self.firstName = firstName
+        self.lastName = lastName
+        self.address = address
+        self.imageURL = imageURL
+        self.imageData = imageData
+        self.sites = sites
     }
     
     /* Contact Init */
+    /*
     convenience init(firstName: String, lastName: String, address: String,imageURL: String, imageData: NSData? = nil, sites: [SocialMediaAccount]? = nil){
-        self.init()
+        self.init(firstName: firstName,lastName: lastName,address: address,imageURL: imageURL, imageData: imageData, sites: sites)
         self.firstName = firstName
         self.lastName = lastName
         self.address = address
@@ -33,13 +49,15 @@ class Contact {
         self.imageURL = imageURL
         self.sites = sites
     }
+    */
     /* Property list init */
-    convenience init (propertyList : NSDictionary) {
-        self.init()
+    required init (fromPropertyList propertyList : NSDictionary) {
         firstName = propertyList["firstName"] as! String
         lastName = propertyList["lastName"] as! String
         address = propertyList["address"] as! String
         imageURL = propertyList["imageURL"] as! String
+        let sites: [NSDictionary] = propertyList["sites"] as! [NSDictionary]
+        self.sites = sites.map{ SocialMediaAccount(fromPropertyList: $0) }
     }
 
     func fullName() ->String{

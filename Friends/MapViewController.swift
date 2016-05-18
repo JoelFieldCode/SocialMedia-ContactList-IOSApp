@@ -32,7 +32,7 @@ class MapViewController: UIViewController, UITextFieldDelegate{
     func downloadMapInfo(addressText: String){
         let addressStr = addressText.stringByReplacingOccurrencesOfString(" ", withString: "+")
         
-        let requestURL: NSURL = NSURL(string: "https://maps.googleapis.com/maps/api/geocode/json?address=\(addressStr)+QLD&key=\(APIKEY)")!
+        let requestURL: NSURL = NSURL(string: "https://maps.googleapis.com/maps/api/geocode/json?address=\(addressStr)&key=\(APIKEY)")!
         let urlRequest: NSMutableURLRequest = NSMutableURLRequest(URL: requestURL)
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(urlRequest) {

@@ -31,7 +31,7 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
     }
     
     func setUpContacts() {
-        let file = directory.stringByAppendingPathComponent("contacts.plist") //set file location
+        let file = directory.stringByAppendingPathComponent("contactList.plist") //set file location
         if let fileContent = NSArray(contentsOfFile: file) as! Array<NSDictionary>?{ //if file has contents
             let count = fileContent.count //count how many elements are in file
             for(var i = 0; i < count; i++){ //loop through each element in file
@@ -40,10 +40,18 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
                 let lastName = fileContent[i].valueForKey("lastName") as! String
                 let address = fileContent[i].valueForKey("address") as! String
                 let imageURL = fileContent[i].valueForKey("imageURL") as! String
-                let contact = Contact(firstName: firstName, lastName: lastName, address: address, imageURL: imageURL)
+                
+                let id = fileContent[i].valueForKey("sites")!.valueForKey("id")![0] as! String
+                let type = fileContent[i].valueForKey("sites")!.valueForKey("type")![0] as! String
+                let newSocial = SocialMediaAccount(id: id as String, type: type as String)
+                let socialArray : [SocialMediaAccount] = [newSocial]
+                
+                let contact = Contact(firstName: firstName, lastName: lastName, address: address, imageURL: imageURL, sites: socialArray)
                 loadPhotoInBackground(contact)
                 objects += [contact] //append photo to array of photos
             }
+            print(fileContent)
+            
         }else{
             print("nothing in contacts.plist") //nothing in file
         }
@@ -56,8 +64,20 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
     func userDidEnterInformation(vc: DetailViewController) {
         if(vc.imageURLTextField.text != ""){
             
-            let newSocial = SocialMediaAccount(type: "Flickr", id: vc.flickrTextField.text!)
-            let newContact = Contact(firstName: vc.firstNameTextField.text!, lastName: vc.lastNameTextField.text!, address: vc.addressTextField.text!, imageURL: vc.imageURLTextField.text!)
+            let newSocial = SocialMediaAccount(id: vc.flickrTextField.text!, type: "Flickr")
+            let newSocial2 = SocialMediaAccount(id: vc.webPageTextField.text!, type: "Web-Page")
+            var socialArray : [SocialMediaAccount] = [newSocial]
+            socialArray.append(newSocial2)
+            
+            let newContact = Contact(
+                firstName: vc.firstNameTextField.text!,
+                lastName: vc.lastNameTextField.text!,
+                address: vc.addressTextField.text!,
+                imageURL: vc.imageURLTextField.text!,
+                sites: socialArray
+            )
+            print(newContact.sites[0].id)
+           
             if(vc.detailItem == nil){
                 objects.append(newContact)
                 loadPhotoInBackground(newContact)
@@ -65,11 +85,13 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
                 objects[vc.indexPath!] = newContact
                 loadPhotoInBackground(newContact)
             }
-            let arrayPLIST = NSMutableArray() //initialize mutable array
-            for contact in objects{  //loop through array of photos
-                arrayPLIST.addObject(contact.propertyListRepresentation()) //add photo to the mutable array
-            }
-            let file = directory.stringByAppendingPathComponent("contacts.plist") //set destination file
+            let temp: [NSDictionary] = self.objects.map { $0.propertyListRepresentation() }
+            let arrayPLIST: NSArray = temp
+            /*
+            print(arrayPLIST)
+            print(temp)
+            */
+            let file = directory.stringByAppendingPathComponent("contactList.plist") //set destination file
             arrayPLIST.writeToFile(file, atomically: true) //write property list to fill
         }else{
             print("url text field empty")
@@ -168,7 +190,7 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
                     arrayPLIST.addObject(contact.propertyListRepresentation()) //add photo to the mutable array
                 }
             }
-            let file = directory.stringByAppendingPathComponent("contacts.plist") //set destination file
+            let file = directory.stringByAppendingPathComponent("contactList.plist") //set destination file
             arrayPLIST.writeToFile(file, atomically: true) //write property list to file
             
             
