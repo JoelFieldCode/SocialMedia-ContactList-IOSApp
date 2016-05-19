@@ -26,8 +26,6 @@ class DetailViewController: UIViewController, UITextFieldDelegate{
     
     @IBOutlet weak var flickrTextField: UITextField!
     
-    @IBOutlet weak var facebookTextField: UITextField!
-    
     @IBOutlet weak var webPageTextField: UITextField!
     
     
@@ -56,6 +54,9 @@ class DetailViewController: UIViewController, UITextFieldDelegate{
                     for(var i = 0; i < detail.sites.count; i++){
                         if(detail.sites[i].type == "Flickr"){
                             flickrTextField.text = detail.sites[i].id
+                        }
+                        if(detail.sites[i].type == "Web-Page"){
+                            webPageTextField.text = detail.sites[i].id
                         }
                     }
                 }
@@ -107,11 +108,20 @@ class DetailViewController: UIViewController, UITextFieldDelegate{
             let controller = (segue.destinationViewController as! UINavigationController).topViewController as! MapViewController
             controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
             controller.navigationItem.leftItemsSupplementBackButton = true
-            controller.address = self.detailItem!.address
+            controller.address = self.addressTextField.text!
         }
-        
+        if segue.identifier == "showWebPage" {
+            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! WebViewController
+            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
+            controller.navigationItem.leftItemsSupplementBackButton = true
+            controller.userURL = self.webPageTextField.text!
+        }
+        if segue.identifier == "showFlickr" {
+            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! PhotoCollectionViewController
+            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
+            controller.navigationItem.leftItemsSupplementBackButton = true
+            controller.flickrUser = self.flickrTextField.text!
+        }
     }
-    
-
 }
 

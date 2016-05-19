@@ -8,8 +8,12 @@
 
 import Foundation
 
-class TimelineEntry: SocialMediaAccount{
+class TimelineEntry{
     var image: NSData?
-    var siteData: NSData?
-    var text: String?
+    var title: String?
+    
+    init(image: NSData? = nil, title: String? = nil) {
+        self.image = image
+        self.title = title
+    }
 }

@@ -41,16 +41,19 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
                 let address = fileContent[i].valueForKey("address") as! String
                 let imageURL = fileContent[i].valueForKey("imageURL") as! String
                 
-                let id = fileContent[i].valueForKey("sites")!.valueForKey("id")![0] as! String
-                let type = fileContent[i].valueForKey("sites")!.valueForKey("type")![0] as! String
-                let newSocial = SocialMediaAccount(id: id as String, type: type as String)
-                let socialArray : [SocialMediaAccount] = [newSocial]
-                
+                let socialCount = fileContent[i].valueForKey("sites")!.count
+                var socialArray = [SocialMediaAccount]()
+                for(var b = 0; b < socialCount; b++){
+                    let id = fileContent[i].valueForKey("sites")![b].valueForKey("id") as! String
+                    let type = fileContent[i].valueForKey("sites")![b].valueForKey("type") as! String
+                    let newSocial = SocialMediaAccount(id: id as String, type: type as String)
+                    socialArray += [newSocial]
+                }
                 let contact = Contact(firstName: firstName, lastName: lastName, address: address, imageURL: imageURL, sites: socialArray)
                 loadPhotoInBackground(contact)
                 objects += [contact] //append photo to array of photos
             }
-            print(fileContent)
+            
             
         }else{
             print("nothing in contacts.plist") //nothing in file
@@ -76,7 +79,7 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
                 imageURL: vc.imageURLTextField.text!,
                 sites: socialArray
             )
-            print(newContact.sites[0].id)
+
            
             if(vc.detailItem == nil){
                 objects.append(newContact)
@@ -87,10 +90,6 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
             }
             let temp: [NSDictionary] = self.objects.map { $0.propertyListRepresentation() }
             let arrayPLIST: NSArray = temp
-            /*
-            print(arrayPLIST)
-            print(temp)
-            */
             let file = directory.stringByAppendingPathComponent("contactList.plist") //set destination file
             arrayPLIST.writeToFile(file, atomically: true) //write property list to fill
         }else{

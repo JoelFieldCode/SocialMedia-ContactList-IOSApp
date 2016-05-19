@@ -32,5 +32,10 @@ class FriendsTests: XCTestCase {
             // Put the code you want to measure the time of here.
         }
     }
+    func testFlickrAPI(){
+        let latestPhotos = latestFlickrPhotos(10)
+        print(latestPhotos)
+        XCTAssertNotNil(latestPhotos)
+    }
     
 }

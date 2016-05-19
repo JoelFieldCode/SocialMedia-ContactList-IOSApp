@@ -38,18 +38,6 @@ class Contact: PropertyListConvertible {
         self.sites = sites
     }
     
-    /* Contact Init */
-    /*
-    convenience init(firstName: String, lastName: String, address: String,imageURL: String, imageData: NSData? = nil, sites: [SocialMediaAccount]? = nil){
-        self.init(firstName: firstName,lastName: lastName,address: address,imageURL: imageURL, imageData: imageData, sites: sites)
-        self.firstName = firstName
-        self.lastName = lastName
-        self.address = address
-        self.imageData = imageData
-        self.imageURL = imageURL
-        self.sites = sites
-    }
-    */
     /* Property list init */
     required init (fromPropertyList propertyList : NSDictionary) {
         firstName = propertyList["firstName"] as! String

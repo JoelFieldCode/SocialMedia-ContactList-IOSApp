@@ -12,13 +12,6 @@ class SocialMediaAccount: PropertyListConvertible {
     
     var type = ""
     var id = ""
-    var entries : [TimelineEntry]?
-    
-    /*init(firstName: String, lastName: String, address: String, imageURL: String,type: String, id: String){
-        super.init(firstName: firstName, lastName: lastName, address: address, imageURL: imageURL)
-        self.id = id
-        self.type = type
-    }*/
     
     init(id: String, type: String) {
         self.id = id
@@ -35,14 +28,6 @@ class SocialMediaAccount: PropertyListConvertible {
             "type": type,
             "id": id
         ]
-    }
-    
-}
-
-extension SocialMediaAccount: CustomStringConvertible {
-    
-    var description: String {
-        return "type: \(type), id: \(id)"
     }
     
 }
