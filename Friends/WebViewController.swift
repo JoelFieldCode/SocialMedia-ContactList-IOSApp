@@ -40,26 +40,16 @@ class WebViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         self.urlTextField.text = self.userURL!
         loadWebPage(self.userURL!)
-        /*
-        guard let url = NSURL(string: self.userURL!) else{
-            return
-        }
-        let request = NSURLRequest(URL: url)
-        webView.loadRequest(request)
-        */
         // Do any additional setup after loading the view, typically from a nib.
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-        /*
-        Accept User's URL and load it in the Web View
-        */
     }
+    
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        var urlString = urlTextField.text!
+        let urlString = urlTextField.text!
         loadWebPage(urlString)
         return true;
     }

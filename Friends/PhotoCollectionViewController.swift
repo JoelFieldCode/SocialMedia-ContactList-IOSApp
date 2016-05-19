@@ -27,20 +27,23 @@ class PhotoCollectionViewController : UICollectionViewController, UICollectionVi
         
         let backgroundDownload = { // put the multi thread logic in a variable
             guard let photos = photosForUser(self.flickrUser!, maximumResults: 50) else{
-                return
+                return;
             }
             for photo in photos{
-                var urlData = url(photo, format: .Small)
-                if let data = NSData(contentsOfURL: urlData!) {
-                    let mainQueue = dispatch_get_main_queue()
-                    dispatch_async(mainQueue, {
-                        let userPhoto = TimelineEntry(image: data, title: photo.title)
-                        self.photoList.append(userPhoto)
-                        self.collectionView!.reloadData()
-                    })
-                } else {
-                print("Could not download Image '\(photo)'")
+                guard let urlData = url(photo, format: .Small) else{
+                    print("invalid")
+                    return;
                 }
+                guard let data = NSData(contentsOfURL: urlData) else {
+                    print("Could not download Image '\(photo)'")
+                    return;
+                }
+                let mainQueue = dispatch_get_main_queue()
+                dispatch_async(mainQueue, {
+                    let userPhoto = TimelineEntry(image: data, title: photo.title)
+                    self.photoList.append(userPhoto)
+                    self.collectionView!.reloadData()
+                })
             }
         }
         dispatch_async(queue, backgroundDownload) //run the multithread
@@ -75,13 +78,6 @@ class PhotoCollectionViewController : UICollectionViewController, UICollectionVi
             let indexPaths = self.collectionView!.indexPathsForSelectedItems()
             let indexPath = indexPaths![0] as NSIndexPath //get the selected cell's indexpath
             controller.detailEntry = photoList[indexPath.row] //set the detail view's object to the object that was pressed
-            /*
-            currentIndexPath = indexPath
-            controller.delegate = self // declare masterview as delegate for fullView
-            controller.id = indexPath.row //pass the object's array index
-            controller.currentImageData = photoList.photoEntries[indexPath.row].imageData //set the current image data,
-            controller.detailsDelegate = self // declare Master view as delegate for detailview. We will pass this on to the detail view in fullViewController's prepareForSegue method.
-            */
         }
     }
 

@@ -20,6 +20,8 @@ class MapViewController: UIViewController, UITextFieldDelegate{
     
     let APIKEY = "AIzaSyDnFnhZJKwVwfiu9py_HVpLcvM-BG5IRNQ"
     
+    let regionRadius: CLLocationDistance = 1000
+    
     @IBOutlet weak var mapView: MKMapView!
     
     
@@ -30,6 +32,7 @@ class MapViewController: UIViewController, UITextFieldDelegate{
         downloadMapInfo(address!)
     }
     func downloadMapInfo(addressText: String){
+        self.mapSearchTextField.text = addressText
         let addressStr = addressText.stringByReplacingOccurrencesOfString(" ", withString: "+")
         
         let requestURL: NSURL = NSURL(string: "https://maps.googleapis.com/maps/api/geocode/json?address=\(addressStr)&key=\(APIKEY)")!
@@ -55,7 +58,7 @@ class MapViewController: UIViewController, UITextFieldDelegate{
                             return
                         }
                         let userAddress = CLLocationCoordinate2D(latitude: lat, longitude: lng)
-                        let userAddressRegion = MKCoordinateRegion(center: userAddress, span: MKCoordinateSpan(latitudeDelta: 2, longitudeDelta: 2))
+                        let userAddressRegion = MKCoordinateRegionMakeWithDistance(userAddress, self.regionRadius * 2.0, self.regionRadius * 2.0)
                         self.mapView.setRegion(userAddressRegion, animated: true)
                     }else{
                         print("zero results")
@@ -67,25 +70,12 @@ class MapViewController: UIViewController, UITextFieldDelegate{
         }
         task.resume()
     }
-    
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        
         if let searchText = mapSearchTextField.text{
             print(searchText)
             downloadMapInfo(searchText)
-            /*
-                let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)
-                
-                /* Multithread download stored in a variable */
-                let backgroundDownload = {
-                    self.downloadMapInfo(searchText)
-                }
-                dispatch_async(queue, backgroundDownload) //run the multithread
-            */
         }
         return true
     }
-
-        
 }

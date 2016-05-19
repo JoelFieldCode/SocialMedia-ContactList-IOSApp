@@ -15,7 +15,6 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
     var objects = [Contact]()
     let directory = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString //set directory
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpContacts()
@@ -53,24 +52,16 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
                 loadPhotoInBackground(contact)
                 objects += [contact] //append photo to array of photos
             }
-            
-            
         }else{
             print("nothing in contacts.plist") //nothing in file
         }
-        /*
-        for contact in objects{ // loop through photo array and download each NSData in the background
-            loadPhotoInBackground(contact)
-        }
-        */
     }
     func userDidEnterInformation(vc: DetailViewController) {
         if(vc.imageURLTextField.text != ""){
-            
             let newSocial = SocialMediaAccount(id: vc.flickrTextField.text!, type: "Flickr")
             let newSocial2 = SocialMediaAccount(id: vc.webPageTextField.text!, type: "Web-Page")
-            var socialArray : [SocialMediaAccount] = [newSocial]
-            socialArray.append(newSocial2)
+            var socialArray = [SocialMediaAccount]()
+            socialArray += [newSocial, newSocial2]
             
             let newContact = Contact(
                 firstName: vc.firstNameTextField.text!,
@@ -79,8 +70,7 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
                 imageURL: vc.imageURLTextField.text!,
                 sites: socialArray
             )
-
-           
+            
             if(vc.detailItem == nil){
                 objects.append(newContact)
                 loadPhotoInBackground(newContact)
@@ -93,7 +83,7 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
             let file = directory.stringByAppendingPathComponent("contactList.plist") //set destination file
             arrayPLIST.writeToFile(file, atomically: true) //write property list to fill
         }else{
-            print("url text field empty")
+            print("url text field empty, dont save user")
         }
     }
     func loadPhotoInBackground(contact : Contact){
@@ -128,7 +118,6 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
         performSegueWithIdentifier("showDetail", sender: nil)
     }
     
-
     // MARK: - Segues
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -192,12 +181,7 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
             let file = directory.stringByAppendingPathComponent("contactList.plist") //set destination file
             arrayPLIST.writeToFile(file, atomically: true) //write property list to file
             
-            
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         }
     }
-
-
 }
 

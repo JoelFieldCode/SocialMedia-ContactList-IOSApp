@@ -69,21 +69,32 @@ class DetailViewController: UIViewController, UITextFieldDelegate{
             
         }
     }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        let urlString = imageURLTextField.text!
+        loadPhotoInBackground(urlString)
+        return true;
+    }
     /* Load Photo in background */
     func loadPhotoInBackground(url: String){
         let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)
         
         let backgroundDownload = { // put the multi thread logic in a variable
-            if let data = NSData(contentsOfURL: NSURL(string: url )!) {
-                let mainQueue = dispatch_get_main_queue()
-                dispatch_async(mainQueue, {
-                    self.currentImageData = data
-                    self.detailItem?.imageData = data
-                    self.displayPic.image = UIImage(data: data)
-                })
-            } else {
-                print("Could not download Image '\(url)'")
+            guard let urlData = NSURL(string: url) else{
+                print("invalid url string")
+                return;
             }
+            guard let data = NSData(contentsOfURL: urlData) else{
+                print("Could not download Image '\(url)'")
+                return;
+            }
+            let mainQueue = dispatch_get_main_queue()
+            dispatch_async(mainQueue, {
+                self.currentImageData = data
+                self.detailItem?.imageData = data
+                self.displayPic.image = UIImage(data: data)
+            })
         }
         dispatch_async(queue, backgroundDownload) //run the multithread
     }
