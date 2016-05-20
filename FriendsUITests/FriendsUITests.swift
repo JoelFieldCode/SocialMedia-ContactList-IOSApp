@@ -39,7 +39,21 @@ class FriendsUITests: XCTestCase {
        runLoop.runUntilDate(someTimeInTheFuture)
     }
     
-// Can't get UI test to work...
+// If you need some details to use while running the app:
+    
+/* 
+flickr users:
+    Matthias.Kahrs
+    strictfunctor
+*/
+/*
+images:
+    https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Monthly_Metrics_Meeting_Wikimedia_Foundation_November_1,_2012_-9985.jpg/350px-Monthly_Metrics_Meeting_Wikimedia_Foundation_November_1,_2012_-9985.jpg
+    
+    https://upload.wikimedia.org/wikipedia/en/9/9b/Manx_cat_by_Karen_Weaver.jpg
+*/
+    
+    // Can't get UI test to work... see above
     
     /*
     func testAddingContact(){
