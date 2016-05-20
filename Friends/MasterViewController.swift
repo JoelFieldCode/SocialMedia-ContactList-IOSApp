@@ -10,15 +10,20 @@ import UIKit
 
 class MasterViewController: UITableViewController, DataEnteredDelegate {
 
+// Delegate setup
     var detailViewController: DetailViewController? = nil
     
+// Contact Array setup
     var objects = [Contact]()
+    
+// File Directory Setup
     let directory = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString //set directory
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Read Contacts from Property List
         setUpContacts()
-        // Do any additional setup after loading the view, typically from a nib.
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
 
         let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "insertNewObject:")
@@ -28,7 +33,9 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
             self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
         }
     }
-    
+/*
+Read the property list and assign objects to the contact array as appropiate
+*/
     func setUpContacts() {
         let file = directory.stringByAppendingPathComponent("contactList.plist") //set file location
         if let fileContent = NSArray(contentsOfFile: file) as! Array<NSDictionary>?{ //if file has contents
@@ -40,15 +47,23 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
                 let address = fileContent[i].valueForKey("address") as! String
                 let imageURL = fileContent[i].valueForKey("imageURL") as! String
                 
+                // count how many social media accounts the user has
                 let socialCount = fileContent[i].valueForKey("sites")!.count
+                //create the social media account array
                 var socialArray = [SocialMediaAccount]()
+                // loop through each social media account
                 for(var b = 0; b < socialCount; b++){
+                    //grab values
                     let id = fileContent[i].valueForKey("sites")![b].valueForKey("id") as! String
                     let type = fileContent[i].valueForKey("sites")![b].valueForKey("type") as! String
+                    //create the social media account object with the values
                     let newSocial = SocialMediaAccount(id: id as String, type: type as String)
+                    //add it to the array of social media accounts
                     socialArray += [newSocial]
                 }
+                //create the contact object
                 let contact = Contact(firstName: firstName, lastName: lastName, address: address, imageURL: imageURL, sites: socialArray)
+                //downnload contact's display pic
                 loadPhotoInBackground(contact)
                 objects += [contact] //append photo to array of photos
             }
@@ -56,13 +71,21 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
             print("nothing in contacts.plist") //nothing in file
         }
     }
+/*
+Handle User entered data from the detail view
+*/
     func userDidEnterInformation(vc: DetailViewController) {
+        //Only accept data if user uploads a profile pic
         if(vc.imageURLTextField.text != ""){
+            // Create social media account objects
             let newSocial = SocialMediaAccount(id: vc.flickrTextField.text!, type: "Flickr")
             let newSocial2 = SocialMediaAccount(id: vc.webPageTextField.text!, type: "Web-Page")
+            //Create social media acc array
             var socialArray = [SocialMediaAccount]()
+            //append each object to array
             socialArray += [newSocial, newSocial2]
             
+            //create new contact object
             let newContact = Contact(
                 firstName: vc.firstNameTextField.text!,
                 lastName: vc.lastNameTextField.text!,
@@ -71,34 +94,46 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
                 sites: socialArray
             )
             
+            // if detail item is nil we know the user was adding a contact
             if(vc.detailItem == nil){
-                objects.append(newContact)
-                loadPhotoInBackground(newContact)
-            }else{
-                objects[vc.indexPath!] = newContact
-                loadPhotoInBackground(newContact)
+                objects.append(newContact) //append to contact array
+                loadPhotoInBackground(newContact) //download photo
+            }else{ // else they were updating an existing contact
+                objects[vc.indexPath!] = newContact //update contact in array
+                loadPhotoInBackground(newContact) //download photo
             }
+            // Assign NSDictionary
             let temp: [NSDictionary] = self.objects.map { $0.propertyListRepresentation() }
+            //Assign NSArray
             let arrayPLIST: NSArray = temp
+            // save to contactList.plist
             let file = directory.stringByAppendingPathComponent("contactList.plist") //set destination file
-            arrayPLIST.writeToFile(file, atomically: true) //write property list to fill
+            arrayPLIST.writeToFile(file, atomically: true) //write to file
         }else{
+            // user has no picture, don't add contact
             print("url text field empty, dont save user")
         }
     }
+/*
+Download the photo in the background
+*/
     func loadPhotoInBackground(contact : Contact){
         let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)
         
         let backgroundDownload = { // put the multi thread logic in a variable
-            if let data = NSData(contentsOfURL: NSURL(string: contact.imageURL)!) {
-                let mainQueue = dispatch_get_main_queue()
-                dispatch_async(mainQueue, {
-                    contact.imageData = data
-                    self.tableView!.reloadData()
-                })
-            } else {
-                print("Could not download Image '\(contact.imageURL)'")
+            guard let urlData = NSURL(string: contact.imageURL) else{ // if string can be cast to NSURL
+                print("invalid url string")
+                return;
             }
+            guard let data = NSData(contentsOfURL: urlData) else{
+                print("Could not download Image '\(contact.imageURL)'") // image coudn't be downloaded
+                return;
+            }
+            let mainQueue = dispatch_get_main_queue()
+            dispatch_async(mainQueue, {
+                contact.imageData = data //assign the NSData to the contact
+                self.tableView!.reloadData() //reload view
+            })
         }
         dispatch_async(queue, backgroundDownload) //run the multithread
     }
@@ -113,7 +148,9 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-    
+/*
+Segue to detail view to add contact
+*/
     func insertNewObject(sender: AnyObject) {
         performSegueWithIdentifier("showDetail", sender: nil)
     }
@@ -121,21 +158,21 @@ class MasterViewController: UITableViewController, DataEnteredDelegate {
     // MARK: - Segues
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "showDetail" {
+        if segue.identifier == "showDetail" { //segue to detail view
             let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
             controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
             controller.navigationItem.leftItemsSupplementBackButton = true
-            controller.delegate = self
-            if let indexPath = self.tableView.indexPathForSelectedRow {
-                let object = objects[indexPath.row]
-                controller.detailItem = object
-                controller.indexPath = indexPath.row
-                if(object.imageData != nil){
+            controller.delegate = self //assign delegate
+            if let indexPath = self.tableView.indexPathForSelectedRow { //user clicked a existing object
+                let object = objects[indexPath.row] //assign object
+                controller.detailItem = object //give detail controller the object
+                controller.indexPath = indexPath.row //give controller the index path
+                if(object.imageData != nil){ //image data was downloaded before user clicked the item
                     controller.currentImageData = object.imageData!
                 }else{ /* If user clicks the item before the picture is downloaded then let detail know by setting it to nil */
                     controller.currentImageData = nil
                 }
-            }else{
+            }else{ //user is adding a object
                 controller.detailItem = nil
             }
         }

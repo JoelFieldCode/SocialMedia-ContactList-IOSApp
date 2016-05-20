@@ -10,6 +10,7 @@ import Foundation
 
 class Contact: PropertyListConvertible {
     
+    // init variables
     var firstName = ""
     var lastName = ""
     var address = ""
@@ -29,6 +30,7 @@ class Contact: PropertyListConvertible {
         ]
     }
     
+    //init contact
     init(firstName: String, lastName: String, address: String, imageURL: String, imageData: NSData? = nil, sites: [SocialMediaAccount] = []){
         self.firstName = firstName
         self.lastName = lastName
@@ -48,6 +50,7 @@ class Contact: PropertyListConvertible {
         self.sites = sites.map{ SocialMediaAccount(fromPropertyList: $0) }
     }
 
+    // return full name
     func fullName() ->String{
         let firstNameValue = firstName
         let lastNameValue = lastName

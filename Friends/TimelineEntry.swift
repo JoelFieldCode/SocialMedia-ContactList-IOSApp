@@ -9,9 +9,11 @@
 import Foundation
 
 class TimelineEntry{
+    //init variables
     var image: NSData?
     var title: String?
     
+    //init timelineentry
     init(image: NSData? = nil, title: String? = nil) {
         self.image = image
         self.title = title

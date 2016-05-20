@@ -10,8 +10,10 @@ import Foundation
 
 protocol PropertyListConvertible {
     
+    // return a NSDictionary
     func propertyListRepresentation() -> NSDictionary
     
+    // init property list
     init(fromPropertyList: NSDictionary)
     
 }

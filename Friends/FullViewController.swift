@@ -10,22 +10,22 @@ import Foundation
 
 import UIKit
 
-
-
 class FullViewController: UIViewController{
+    //init flickr pic
     var detailEntry: TimelineEntry? = nil
     
+    //init image view
     @IBOutlet weak var fullDisplayImage: UIImageView!
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(true)
         
-        if  detailEntry != nil{ // if object exists we know the user is viewing an existing entry, so we can use the object's properties to set up the view
+        if  detailEntry != nil{
+            //assign the photo's title to the nav title
             self.navigationItem.title = detailEntry!.title!
+            //assign the image to the image view
             self.fullDisplayImage.image = UIImage(data: detailEntry!.image!) //set UIImage
             
         }
     }
-    
-    
 }

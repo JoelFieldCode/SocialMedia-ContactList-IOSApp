@@ -11,38 +11,43 @@ import Foundation
 import UIKit
 
 class PhotoCollectionViewController : UICollectionViewController, UICollectionViewDelegateFlowLayout{
-    
+    //init the timeline entry array
     var photoList = [TimelineEntry]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //set the title to the flickr user's name
         self.navigationItem.title = "Flickr Photos for \(flickrUser!)"
+        //download photos
         loadPhotosInBackground()
     }
     
+    //init the flickr username
     var flickrUser : String? = nil
-    
+/*
+download photo in background
+*/
     func loadPhotosInBackground(){
         let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)
         
         let backgroundDownload = { // put the multi thread logic in a variable
-            guard let photos = photosForUser(self.flickrUser!, maximumResults: 50) else{
+            guard let photos = photosForUser(self.flickrUser!, maximumResults: 50) else{ //collect 50 photos for the given user
                 return;
             }
-            for photo in photos{
-                guard let urlData = url(photo, format: .Small) else{
+            for photo in photos{ //loop through each photo result
+                guard let urlData = url(photo, format: .Small) else{ //get the url for the phto
                     print("invalid")
                     return;
                 }
-                guard let data = NSData(contentsOfURL: urlData) else {
+                guard let data = NSData(contentsOfURL: urlData) else { // convert eht url to NSDATA
                     print("Could not download Image '\(photo)'")
                     return;
                 }
                 let mainQueue = dispatch_get_main_queue()
                 dispatch_async(mainQueue, {
-                    let userPhoto = TimelineEntry(image: data, title: photo.title)
-                    self.photoList.append(userPhoto)
-                    self.collectionView!.reloadData()
+                    let userPhoto = TimelineEntry(image: data, title: photo.title) //create timeline entry with photo
+                    self.photoList.append(userPhoto) //append the timeline entry to the array
+                    self.collectionView!.reloadData() //reload view
                 })
             }
         }
@@ -69,9 +74,9 @@ class PhotoCollectionViewController : UICollectionViewController, UICollectionVi
         }
         return cell
     }
-    
+
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "showFullPic"{ //segue to existing photo detail view screen
+        if segue.identifier == "showFullPic"{ //segue to full view for flickr image
             let controller = (segue.destinationViewController as! UINavigationController).topViewController as! FullViewController
             controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
             controller.navigationItem.leftItemsSupplementBackButton = true

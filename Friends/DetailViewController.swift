@@ -30,40 +30,48 @@ class DetailViewController: UIViewController, UITextFieldDelegate{
     
     
     @IBOutlet weak var displayPic: UIImageView!
-    
+
+//current image data of photo
     var currentImageData: NSData?
     
+// determine if detail item was set
     var detailItem: Contact? {
         didSet {
             // Update the view.
             self.configureView()
         }
     }
+// assign delegate
     var delegate : DataEnteredDelegate? = nil
-    var indexPath : Int?
     
+// init index path
+    var indexPath : Int?
+
+/*
+Setup the view
+*/
     func configureView() {
         // Update the user interface for the detail item.
         if let detail = self.detailItem {
-            if let label = detailDescriptionLabel{
+            if let label = detailDescriptionLabel{ //wait for controller to find the labels and text fields
                 firstNameTextField.text = detail.firstName
                 lastNameTextField.text = detail.lastName
                 addressTextField.text = detail.address
                 imageURLTextField.text = detail.imageURL
-                if(false == detail.sites.isEmpty){
-                    for(var i = 0; i < detail.sites.count; i++){
-                        if(detail.sites[i].type == "Flickr"){
-                            flickrTextField.text = detail.sites[i].id
+                if(false == detail.sites.isEmpty){ // if user does has at least one social media account
+                    for(var i = 0; i < detail.sites.count; i++){ //loop through their accounts
+                        if(detail.sites[i].type == "Flickr"){ //if the account is a flickr acc
+                            flickrTextField.text = detail.sites[i].id //take the flickr id
                         }
-                        if(detail.sites[i].type == "Web-Page"){
-                            webPageTextField.text = detail.sites[i].id
+                        if(detail.sites[i].type == "Web-Page"){ //if the account is a web page
+                            webPageTextField.text = detail.sites[i].id //take the web page id
                         }
                     }
                 }
-                if currentImageData != nil{
+                if currentImageData != nil{ // if contact's display pic data has been downloaded
                     displayPic.image = UIImage(data: currentImageData!) //set UIImage
-                }else{ /* If user clicks the item before it is downloaded then we need to re-download the item */
-                    loadPhotoInBackground(detail.imageURL)
+                }else{ /* User clicked the item before it was downloaded so we need to re-download the item */
+                    loadPhotoInBackground(detail.imageURL) //download photo
                 }
             }
             
@@ -72,25 +80,30 @@ class DetailViewController: UIViewController, UITextFieldDelegate{
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        //take url
         let urlString = imageURLTextField.text!
+        //download photo
         loadPhotoInBackground(urlString)
         return true;
     }
-    /* Load Photo in background */
+/* 
+Load Photo in background
+*/
     func loadPhotoInBackground(url: String){
         let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)
         
         let backgroundDownload = { // put the multi thread logic in a variable
-            guard let urlData = NSURL(string: url) else{
+            guard let urlData = NSURL(string: url) else{ // if string can be cast to NSURL
                 print("invalid url string")
                 return;
             }
-            guard let data = NSData(contentsOfURL: urlData) else{
+            guard let data = NSData(contentsOfURL: urlData) else{ // if NSURL can be cast to NSDATA
                 print("Could not download Image '\(url)'")
                 return;
             }
             let mainQueue = dispatch_get_main_queue()
             dispatch_async(mainQueue, {
+                //assign picture
                 self.currentImageData = data
                 self.detailItem?.imageData = data
                 self.displayPic.image = UIImage(data: data)
@@ -113,24 +126,29 @@ class DetailViewController: UIViewController, UITextFieldDelegate{
     override func viewWillDisappear(animated: Bool) {
         delegate?.userDidEnterInformation(self)
     }
-    
+/*
+Segues
+*/
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showMap" {
             let controller = (segue.destinationViewController as! UINavigationController).topViewController as! MapViewController
             controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
             controller.navigationItem.leftItemsSupplementBackButton = true
+            //give the controller the user's address
             controller.address = self.addressTextField.text!
         }
         if segue.identifier == "showWebPage" {
             let controller = (segue.destinationViewController as! UINavigationController).topViewController as! WebViewController
             controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
             controller.navigationItem.leftItemsSupplementBackButton = true
+            //give the controller the web page url
             controller.userURL = self.webPageTextField.text!
         }
         if segue.identifier == "showFlickr" {
             let controller = (segue.destinationViewController as! UINavigationController).topViewController as! PhotoCollectionViewController
             controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
             controller.navigationItem.leftItemsSupplementBackButton = true
+            //give the controller the user's flickr id
             controller.flickrUser = self.flickrTextField.text!
         }
     }

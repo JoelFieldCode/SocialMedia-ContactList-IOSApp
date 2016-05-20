@@ -14,6 +14,7 @@ import WebKit
 
 class WebViewController: UIViewController, UITextFieldDelegate {
     
+    //init user's address url
     var userURL: String?
     
     /*
@@ -53,6 +54,9 @@ class WebViewController: UIViewController, UITextFieldDelegate {
         loadWebPage(urlString)
         return true;
     }
+/*
+Load a web page with a given url string
+*/
     func loadWebPage(url: String){
         var urlString = url
         // If the user didn't type in "https://" we will insert it in for them
